@@ -6,6 +6,7 @@ import { parseUpiQrPayload } from '../utils/upiQrParser'
 import {
   addPendingPayment,
   deferPendingPayment,
+  getMostUsedUpiApp,
   getPendingPayments,
   getTopAmountsForShop,
   markPendingAs,
@@ -74,8 +75,6 @@ export default function PayPage() {
     }
   }, [])
 
-  const totalShops = useMemo(() => shops.length, [shops])
-
   const recommendedByShop = useMemo(() => {
     return shops.reduce((acc, shop) => {
       acc[shop.id] = getTopAmountsForShop(shop.name, [10, 20, 50])
@@ -133,11 +132,14 @@ export default function PayPage() {
       return
     }
 
+    const preferredApp = getMostUsedUpiApp('other')
+
     launchUpiIntent({
       upiId: shop.defaultUpi,
       name: shop.name,
       amount,
       note: `${shop.name} payment`,
+      app: preferredApp,
     })
 
     const pending = addPendingPayment({
@@ -145,6 +147,7 @@ export default function PayPage() {
       shopName: shop.name,
       upiId: shop.defaultUpi,
       amount,
+      intentApp: preferredApp,
     })
 
     syncPendingUi(false)
@@ -219,7 +222,7 @@ export default function PayPage() {
           {pendingItems.length > 0 ? <span className="pending-badge">{pendingItems.length}</span> : null}
         </button>
       </div>
-      <p className="pay-subtitle">{totalShops} shops ready for one-tap UPI payments.</p>
+      <p className="pay-subtitle">Nearby payments.</p>
 
       {activePendingPrompt ? (
         <GlassPanel className="pending-prompt">

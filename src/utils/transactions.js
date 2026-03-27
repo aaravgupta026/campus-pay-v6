@@ -19,7 +19,7 @@ const writeList = (key, list) => localStorage.setItem(key, JSON.stringify(list))
 
 export const getTransactions = () => readList(TX_STORAGE_KEY)
 
-export const addTransaction = ({ shopName, upiId, amount, status = 'confirmed', createdAt = new Date().toISOString() }) => {
+export const addTransaction = ({ shopName, upiId, amount, status = 'confirmed', appUsed = 'other', createdAt = new Date().toISOString() }) => {
   const entry = {
     id: `tx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     createdAt,
@@ -27,6 +27,7 @@ export const addTransaction = ({ shopName, upiId, amount, status = 'confirmed', 
     upiId,
     amount: Number(amount),
     status,
+    appUsed,
   }
 
   const next = [...getTransactions(), entry]
@@ -42,13 +43,14 @@ export const getPendingPayments = () => {
   return readList(PENDING_STORAGE_KEY).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
 }
 
-export const addPendingPayment = ({ shopId, shopName, upiId, amount }) => {
+export const addPendingPayment = ({ shopId, shopName, upiId, amount, intentApp = 'other' }) => {
   const entry = {
     id: `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     shopId,
     shopName,
     upiId,
     amount: Number(amount),
+    intentApp,
     createdAt: new Date().toISOString(),
     promptCount: 0,
   }
@@ -75,6 +77,7 @@ export const markPendingAs = (pendingId, decision) => {
     amount: target.amount,
     status,
     createdAt: target.createdAt,
+    appUsed: target.intentApp || 'other',
   })
 }
 
@@ -127,4 +130,28 @@ export const getTopAmountsForShop = (shopName, fallback = [10, 20, 50]) => {
     .map(([amount]) => amount)
 
   return sorted.length > 0 ? sorted : fallback
+}
+
+export const getMostUsedUpiApp = (fallback = 'other') => {
+  const supportedApps = new Set(['phonepe', 'gpay', 'paytm', 'other'])
+  const usageMap = new Map()
+
+  getConfirmedTransactions().forEach((tx) => {
+    const app = supportedApps.has(tx.appUsed) ? tx.appUsed : 'other'
+    const prev = usageMap.get(app) || { count: 0, lastAt: 0 }
+    const timestamp = new Date(tx.createdAt).getTime()
+    usageMap.set(app, {
+      count: prev.count + 1,
+      lastAt: Math.max(prev.lastAt, Number.isNaN(timestamp) ? 0 : timestamp),
+    })
+  })
+
+  const [top] = Array.from(usageMap.entries()).sort((a, b) => {
+    if (b[1].count !== a[1].count) {
+      return b[1].count - a[1].count
+    }
+    return b[1].lastAt - a[1].lastAt
+  })
+
+  return top ? top[0] : fallback
 }
