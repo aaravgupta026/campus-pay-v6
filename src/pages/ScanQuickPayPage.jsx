@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import GlassPanel from '../components/common/GlassPanel'
 import QrScannerPanel from '../components/common/QrScannerPanel'
 import { launchUpiIntent } from '../utils/upiDeepLink'
@@ -6,12 +6,21 @@ import { parseUpiQrPayload } from '../utils/upiQrParser'
 import { addPendingPayment, getMostUsedUpiApp } from '../utils/transactions'
 import './ScanQuickPayPage.css'
 
+const SCAN_APP_PREF_KEY = 'campus_pay_v6_scan_preferred_app'
+
 const APP_LABELS = {
   phonepe: 'PhonePe',
   gpay: 'Google Pay',
   paytm: 'Paytm',
-  other: 'Default UPI Chooser',
+  other: 'UPI Chooser',
 }
+
+const APP_OPTIONS = [
+  { value: 'auto', label: 'Auto (Most Used)' },
+  { value: 'gpay', label: 'Google Pay' },
+  { value: 'phonepe', label: 'PhonePe' },
+  { value: 'paytm', label: 'Paytm' },
+]
 
 export default function ScanQuickPayPage() {
   const [form, setForm] = useState({
@@ -26,8 +35,16 @@ export default function ScanQuickPayPage() {
     name: '',
     amount: '',
   })
-  const preferredApp = getMostUsedUpiApp('other')
-  const preferredAppLabel = APP_LABELS[preferredApp] || APP_LABELS.other
+  const [scanPreferredApp, setScanPreferredApp] = useState(() => localStorage.getItem(SCAN_APP_PREF_KEY) || 'auto')
+
+  useEffect(() => {
+    localStorage.setItem(SCAN_APP_PREF_KEY, scanPreferredApp)
+  }, [scanPreferredApp])
+
+  const autoApp = useMemo(() => getMostUsedUpiApp('gpay'), [status])
+  const preferredApp = scanPreferredApp === 'auto' ? autoApp : scanPreferredApp
+  const preferredAppLabel = APP_LABELS[preferredApp] || APP_LABELS.gpay
+  const preferredAppDisplay = scanPreferredApp === 'auto' ? `${preferredAppLabel} (Auto)` : preferredAppLabel
 
   const onChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -129,6 +146,16 @@ export default function ScanQuickPayPage() {
 
       <GlassPanel>
         <h3>Manual Quick Pay</h3>
+        <label className="quick-preferred-app">
+          <span>Preferred App</span>
+          <select value={scanPreferredApp} onChange={(e) => setScanPreferredApp(e.target.value)}>
+            {APP_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+        <p className="quick-preferred-hint">Current preferred app: {preferredAppDisplay}</p>
+
         <form className="quick-pay-form" onSubmit={handlePayNow}>
           <label>
             <span>Enter UPI ID</span>
@@ -173,7 +200,7 @@ export default function ScanQuickPayPage() {
             <h3>Pay Scanned Merchant</h3>
             <p className="scan-dialog-line"><strong>Name:</strong> {scanDialog.name}</p>
             <p className="scan-dialog-line"><strong>UPI:</strong> {scanDialog.upiId}</p>
-            <p className="scan-dialog-preferred"><strong>Preferred App:</strong> {preferredAppLabel}</p>
+            <p className="scan-dialog-preferred"><strong>Preferred App:</strong> {preferredAppDisplay}</p>
 
             <label className="scan-dialog-field">
               <span>Enter Amount</span>

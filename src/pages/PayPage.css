@@ -63,8 +63,8 @@
   gap: 8px;
   padding: 10px;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.16);
-  background: rgba(8, 8, 8, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
   margin-top: 8px;
 }
 
@@ -95,11 +95,12 @@
 .add-shop-grid select,
 .add-shop-grid input,
 .custom-input {
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background: rgba(7, 7, 7, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   border-radius: 12px;
   padding: 10px;
+  font-weight: 600;
 }
 
 .chips-grid {
@@ -134,11 +135,11 @@
 
 .mini-btn {
   border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(12, 12, 12, 0.9);
+  background: rgba(6, 6, 6, 0.96);
   color: var(--gold-1);
   border-radius: 12px;
   padding: 10px 14px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .mini-btn.muted {

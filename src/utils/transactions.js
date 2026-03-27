@@ -132,8 +132,14 @@ export const getTopAmountsForShop = (shopName, fallback = [10, 20, 50]) => {
   return sorted.length > 0 ? sorted : fallback
 }
 
-export const getMostUsedUpiApp = (fallback = 'other') => {
+export const getMostUsedUpiApp = (fallback = 'gpay') => {
   const supportedApps = new Set(['phonepe', 'gpay', 'paytm', 'other'])
+  const tiePriority = {
+    gpay: 4,
+    phonepe: 3,
+    paytm: 2,
+    other: 1,
+  }
   const usageMap = new Map()
 
   getConfirmedTransactions().forEach((tx) => {
@@ -149,6 +155,9 @@ export const getMostUsedUpiApp = (fallback = 'other') => {
   const [top] = Array.from(usageMap.entries()).sort((a, b) => {
     if (b[1].count !== a[1].count) {
       return b[1].count - a[1].count
+    }
+    if ((tiePriority[b[0]] || 0) !== (tiePriority[a[0]] || 0)) {
+      return (tiePriority[b[0]] || 0) - (tiePriority[a[0]] || 0)
     }
     return b[1].lastAt - a[1].lastAt
   })
