@@ -3,6 +3,7 @@
 export const routes = [
   { path: '/login', name: 'Login', isPublic: true },
   { path: '/pay', name: 'Pay', requiresAuth: true },
+  { path: '/scan', name: 'Scan', requiresAuth: true },
   { path: '/analytics', name: 'Analytics', requiresAuth: true },
   { path: '/profile', name: 'Profile', requiresAuth: true },
   { path: '/playground', name: 'Playground', requiresAuth: true },

@@ -4,6 +4,7 @@
   margin-bottom: 24px;
   font-size: 28px;
   font-weight: 700;
+  color: var(--gold-1);
 }
 
 .user-info-container {
@@ -26,24 +27,24 @@
 .info-form span {
   font-size: 14px;
   font-weight: 500;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .info-form input {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 10, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.18);
   padding: 12px;
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 14px;
 }
 
 .info-form input:focus {
   outline: none;
-  border-color: rgba(99, 102, 241, 0.5);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: rgba(212, 175, 55, 0.55);
+  background: rgba(0, 0, 0, 0.92);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
 .info-form input::placeholder {
@@ -58,10 +59,10 @@
   width: 100%;
   margin-top: 12px;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(10, 10, 10, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
@@ -69,13 +70,13 @@
 
 .upi-select:focus {
   outline: none;
-  border-color: rgba(99, 102, 241, 0.5);
-  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(212, 175, 55, 0.55);
+  background: rgba(0, 0, 0, 0.92);
 }
 
 .upi-select option {
-  background: #1a1a2e;
-  color: #ffffff;
+  background: #141414;
+  color: var(--text-primary);
 }
 
 .actions-container {
@@ -85,20 +86,20 @@
 .logout-btn {
   width: 100%;
   padding: 12px 16px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(20, 20, 20, 0.9));
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 12px;
-  color: #ef4444;
+  color: var(--gold-2);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(220, 38, 38, 0.35));
-  border-color: rgba(239, 68, 68, 0.5);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(25, 25, 25, 0.95));
+  border-color: rgba(212, 175, 55, 0.55);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.22);
 }
 
 .logout-btn:active {

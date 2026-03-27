@@ -14,7 +14,7 @@
   max-width: 480px;
   min-height: 100vh;
   position: relative;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(165deg, #060606 0%, #0a0a0a 60%, #111111 100%);
 }
 
 .app-header-glass {
@@ -24,9 +24,9 @@
   margin: 12px;
   padding: 14px 16px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(14, 14, 14, 0.72);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(212, 175, 55, 0.25);
 }
 
 .brand-title {
@@ -34,12 +34,13 @@
   font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
+  color: #d4af37;
 }
 
 .brand-subtitle {
   font-size: 13px;
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .main-content {

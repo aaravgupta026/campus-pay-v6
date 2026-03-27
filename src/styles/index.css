@@ -11,7 +11,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.15), transparent 35%),
+    radial-gradient(circle at 85% 0%, rgba(228, 197, 99, 0.1), transparent 40%),
+    linear-gradient(160deg, #050505 0%, #0a0a0a 55%, #111111 100%);
   color: #ffffff;
   min-height: 100vh;
   overflow-x: hidden;
@@ -33,20 +36,24 @@ body {
 
 /* Glassmorphism Design Tokens */
 :root {
-  /* Colors */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --primary-color: #6366f1;
-  --primary-light: #818cf8;
-  --primary-dark: #4f46e5;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --error-color: #ef4444;
+  --bg-deep: #0a0a0a;
+  --bg-elevated: #141414;
+  --glass-bg: rgba(20, 20, 20, 0.6);
+  --glass-border: rgba(212, 175, 55, 0.2);
+  --gold-1: #d4af37;
+  --gold-2: #ffd700;
+  --gold-3: #e4c563;
+  --primary-color: #d4af37;
+  --primary-light: #ffd700;
+  --primary-dark: #a8841f;
+  --success-color: #e4c563;
+  --warning-color: #d4af37;
+  --error-color: #f87171;
   
   /* Typography */
   --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-tertiary: #999999;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
   
   /* Spacing */
   --spacing-xs: 4px;
@@ -80,10 +87,10 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(212, 175, 55, 0.3);
   border-radius: 4px;
 }
 
 body::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(212, 175, 55, 0.5);
 }

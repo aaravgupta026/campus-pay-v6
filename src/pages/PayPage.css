@@ -1,79 +1,115 @@
-/* Pay Page Styles */
-
 .pay-page h1 {
-  margin-bottom: 24px;
-  font-size: 28px;
-  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--gold-1);
 }
 
-.shops-container {
-  margin-bottom: 20px;
+.pay-subtitle {
+  margin-bottom: 18px;
+  color: var(--text-secondary);
 }
 
-.shops-container h2 {
-  margin-bottom: 16px;
+.shop-card {
+  margin-bottom: 14px;
 }
 
-.shops-list {
+.shop-header {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.amounts-container {
-  margin-bottom: 20px;
+.shop-upi {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
-.amount-chips {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.shop-app-select,
+.add-shop-grid select,
+.add-shop-grid input,
+.custom-input {
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(7, 7, 7, 0.86);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.chips-grid {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .amount-chip {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(129, 140, 248, 0.2));
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  padding: 12px 16px;
+  min-width: 88px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: linear-gradient(145deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.18));
+  color: var(--gold-2);
   border-radius: 12px;
-  color: #818cf8;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 10px 14px;
+  font-weight: 700;
 }
 
-.amount-chip:hover {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(129, 140, 248, 0.3));
-  border-color: rgba(99, 102, 241, 0.5);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+.custom-pay-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
 }
 
-.amount-chip:active {
-  transform: scale(0.98);
-}
-
-.scanner-container {
-  margin-bottom: 20px;
-}
-
-.scanner-mount {
-  aspect-ratio: 1;
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
+.shop-actions {
+  margin-top: 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
+  gap: 8px;
 }
 
-.placeholder-content {
-  padding: 20px;
-  text-align: center;
+.mini-btn {
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(12, 12, 12, 0.9);
+  color: var(--gold-1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
 }
 
-@media (min-width: 481px) {
-  .amount-chips {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.mini-btn.muted {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mini-btn.danger {
+  color: #ffb8b8;
+  border-color: rgba(255, 120, 120, 0.4);
+}
+
+.add-shop-panel {
+  margin-top: 8px;
+}
+
+.add-shop-grid {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+}
+
+.add-shop-btn {
+  margin-top: 10px;
+  width: 100%;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 13px;
+  padding: 12px;
+  font-weight: 800;
+  color: #111;
+  background: linear-gradient(120deg, #d4af37, #e4c563, #ffd700);
+}
+
+.pay-status {
+  margin-top: 10px;
+  margin-bottom: 100px;
+  color: var(--text-secondary);
 }

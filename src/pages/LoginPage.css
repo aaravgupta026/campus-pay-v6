@@ -13,16 +13,16 @@
 
 .login-subtitle {
   margin: 8px 0 16px 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
 }
 
 .login-warning {
   margin-bottom: 12px;
   padding: 10px;
   border-radius: 12px;
-  background: rgba(245, 158, 11, 0.18);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: #fcd34d;
+  background: rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  color: var(--gold-2);
 }
 
 .login-error {
@@ -38,7 +38,7 @@
   margin: 14px 0;
   text-align: center;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
 }
 
 .login-field {
@@ -51,10 +51,16 @@
 .login-field input {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(10, 10, 10, 0.78);
   padding: 11px 12px;
-  color: white;
+  color: var(--text-primary);
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.58);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
 .login-actions {
@@ -72,17 +78,18 @@
   padding: 11px 12px;
   font-weight: 600;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--gold-2);
 }
 
 .login-btn.primary {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  background: linear-gradient(135deg, #d4af37, #ffd700, #e4c563);
+  color: #111111;
 }
 
 .login-btn.ghost {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(212, 175, 55, 0.35);
 }
 
 .login-btn:disabled {

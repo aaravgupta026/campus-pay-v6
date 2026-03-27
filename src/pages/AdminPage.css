@@ -5,15 +5,16 @@
   font-size: 28px;
   font-weight: 700;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(24, 24, 24, 0.9));
   border-radius: 16px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: var(--gold-1);
 }
 
 .admin-welcome {
   margin-bottom: 20px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(20, 20, 20, 0.9));
+  border: 1px solid rgba(212, 175, 55, 0.24);
 }
 
 .catalog-container,
@@ -23,10 +24,10 @@
 }
 
 .admin-page .placeholder-content {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(10, 10, 10, 0.75);
   padding: 20px;
   border-radius: 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(212, 175, 55, 0.25);
   text-align: center;
-  color: #999999;
+  color: var(--text-secondary);
 }

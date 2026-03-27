@@ -7,9 +7,9 @@ export default function BottomNav() {
 
   const tabs = [
     { id: 'pay', label: 'Pay', icon: '💳', path: '/pay' },
+    { id: 'scan', label: 'Scan', icon: '📷', path: '/scan' },
     { id: 'analytics', label: 'Analytics', icon: '📊', path: '/analytics' },
     { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
-    { id: 'playground', label: 'Playground', icon: '🎮', path: '/playground' }
   ]
 
   const handleTabClick = (tab) => navigate(tab.path)

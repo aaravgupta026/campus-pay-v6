@@ -11,13 +11,26 @@ import {
 import { isFirebaseConfigured } from '../services/firebase-config'
 
 const AuthContext = createContext(null)
+const AUTH_BYPASS = true
+const MOCK_USER = {
+  uid: 'mock-user-v6',
+  displayName: 'Campus Tester',
+  email: 'mock.user@campuspay.local',
+  isAnonymous: false,
+}
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(AUTH_BYPASS ? MOCK_USER : null)
+  const [loading, setLoading] = useState(!AUTH_BYPASS)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    if (AUTH_BYPASS) {
+      setUser(MOCK_USER)
+      setLoading(false)
+      return () => {}
+    }
+
     let unsubscribe = () => {}
 
     const bootstrap = async () => {
@@ -69,12 +82,13 @@ export function AuthProvider({ children }) {
       user,
       loading,
       error,
+      isBypassMode: AUTH_BYPASS,
       isFirebaseConfigured,
       loginWithGoogle: () => runAuthAction(signInWithGoogle),
       loginWithEmail: (email, password) => runAuthAction(() => loginWithEmail(email, password)),
       registerWithEmail: (email, password) => runAuthAction(() => registerWithEmail(email, password)),
-      loginAsGuest: () => runAuthAction(loginAsGuest),
-      logout: () => runAuthAction(signOutUser),
+      loginAsGuest: () => (AUTH_BYPASS ? Promise.resolve({ ok: true, user: MOCK_USER }) : runAuthAction(loginAsGuest)),
+      logout: () => (AUTH_BYPASS ? Promise.resolve({ ok: true, user: MOCK_USER }) : runAuthAction(signOutUser)),
       clearError: () => setError(''),
     }),
     [user, loading, error],
