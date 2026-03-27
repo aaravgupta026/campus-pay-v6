@@ -1,0 +1,38 @@
+/* Glassmorphic Panel Component */
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+}
+
+.glass-panel h2 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.glass-panel h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.glass-panel p {
+  color: #999999;
+  font-size: 14px;
+}

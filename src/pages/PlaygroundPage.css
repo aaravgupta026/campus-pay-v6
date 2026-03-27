@@ -1,0 +1,20 @@
+/* Playground Page Styles */
+
+.playground-page h1 {
+  margin-bottom: 24px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.playground-container {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  border-style: dashed;
+}
+
+.playground-container .placeholder-content {
+  text-align: center;
+}
