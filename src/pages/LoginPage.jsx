@@ -23,7 +23,7 @@ export default function LoginPage() {
 
         {!isFirebaseConfigured ? (
           <p className="login-warning">
-            Firebase config missing. Add VITE_FIREBASE_* variables in your Vercel project and local .env file.
+            Firebase config missing or invalid. Google/Email may fail until VITE_FIREBASE_* vars are fixed.
           </p>
         ) : null}
 
@@ -81,7 +81,7 @@ export default function LoginPage() {
           onClick={() => withBusyState(loginAsGuest)}
           disabled={isSubmitting}
         >
-          Continue as Guest
+          Continue as Guest (always available)
         </button>
       </GlassPanel>
     </div>

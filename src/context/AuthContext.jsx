@@ -43,11 +43,23 @@ export function AuthProvider({ children }) {
     try {
       const result = await action()
       if (!result?.ok) {
-        setError('Firebase configuration is missing. Please set VITE_FIREBASE_* env vars.')
+        if (result?.reason === 'missing_firebase_env') {
+          setError('Firebase env is missing on this deploy. Add VITE_FIREBASE_* in Vercel and redeploy.')
+        } else {
+          setError('Authentication is not available right now. Please try guest mode.')
+        }
+      } else if (result?.mode === 'local-guest' && !isFirebaseConfigured) {
+        setError('Firebase is not configured yet. You are signed in with local guest mode.')
       }
       return result
     } catch (err) {
-      setError(err?.message || 'Authentication failed.')
+      if (err?.code === 'auth/configuration-not-found') {
+        setError('Firebase Auth is not enabled/configured for this project. Enable Google/Anonymous providers in Firebase Console.')
+      } else if (err?.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized in Firebase Auth. Add your Vercel domain in Authorized domains.')
+      } else {
+        setError(err?.message || 'Authentication failed.')
+      }
       return { ok: false }
     }
   }
