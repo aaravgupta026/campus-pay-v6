@@ -1,0 +1,53 @@
+.qr-panel {
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(8, 8, 8, 0.74);
+}
+
+.qr-panel-head h4 {
+  margin: 0;
+  color: var(--gold-1);
+}
+
+.qr-panel-head p {
+  margin: 4px 0 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.qr-reader {
+  min-height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  background: linear-gradient(145deg, rgba(14, 14, 14, 0.9), rgba(24, 24, 24, 0.86));
+}
+
+.qr-actions {
+  margin-top: 10px;
+}
+
+.qr-btn {
+  width: 100%;
+  border-radius: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  font-weight: 700;
+}
+
+.qr-btn.qr-primary {
+  color: #111111;
+  background: linear-gradient(135deg, #d4af37, #ffd700);
+}
+
+.qr-btn.qr-secondary {
+  color: var(--text-primary);
+  background: rgba(14, 14, 14, 0.9);
+}
+
+.qr-error {
+  margin: 8px 0 0;
+  color: #fca5a5;
+  font-size: 13px;
+}

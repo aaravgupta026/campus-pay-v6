@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import GlassPanel from '../components/common/GlassPanel'
+import QrScannerPanel from '../components/common/QrScannerPanel'
 import { launchUpiIntent } from '../utils/upiDeepLink'
+import { parseUpiQrPayload } from '../utils/upiQrParser'
+import { addPendingPayment } from '../utils/transactions'
 import './ScanQuickPayPage.css'
 
 export default function ScanQuickPayPage() {
@@ -8,12 +11,26 @@ export default function ScanQuickPayPage() {
     upiId: '',
     name: '',
     amount: '',
-    app: 'other',
   })
   const [status, setStatus] = useState('')
 
   const onChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleQrScan = (rawText) => {
+    const parsed = parseUpiQrPayload(rawText)
+    if (!parsed.upiId) {
+      setStatus('QR scanned but UPI ID could not be extracted. Please enter manually.')
+      return
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      upiId: parsed.upiId,
+      name: parsed.name || prev.name,
+    }))
+    setStatus('QR captured successfully. Verify amount and tap Pay Now.')
   }
 
   const handlePayNow = (event) => {
@@ -29,11 +46,17 @@ export default function ScanQuickPayPage() {
       upiId: form.upiId,
       name: form.name,
       amount,
-      app: form.app,
       note: `Quick Pay to ${form.name}`,
     })
 
-    setStatus('UPI app launched. If one app fails, chooser should open via generic UPI intent.')
+    addPendingPayment({
+      shopId: `quick-${Date.now()}`,
+      shopName: form.name,
+      upiId: form.upiId,
+      amount,
+    })
+
+    setStatus('UPI app launched. Please confirm this payment later from the Pay tab pending icon.')
   }
 
   return (
@@ -41,8 +64,11 @@ export default function ScanQuickPayPage() {
       <h1>Scan / Quick Pay</h1>
 
       <GlassPanel>
-        <h3>Scanner Placeholder</h3>
-        <div className="scan-box">QR Scanner preview will be mounted here in next phase.</div>
+        <QrScannerPanel
+          onScan={handleQrScan}
+          title="Scan UPI QR"
+          helperText="Scan first to auto-fill merchant name and UPI ID in the quick pay form."
+        />
       </GlassPanel>
 
       <GlassPanel>
@@ -77,16 +103,6 @@ export default function ScanQuickPayPage() {
               value={form.amount}
               onChange={(e) => onChange('amount', e.target.value)}
             />
-          </label>
-
-          <label>
-            <span>Pay using</span>
-            <select value={form.app} onChange={(e) => onChange('app', e.target.value)}>
-              <option value="phonepe">PhonePe</option>
-              <option value="gpay">GPay</option>
-              <option value="paytm">Paytm</option>
-              <option value="other">Other UPI Apps (Chooser)</option>
-            </select>
           </label>
 
           <button type="submit" className="pay-now-btn">Pay Now</button>

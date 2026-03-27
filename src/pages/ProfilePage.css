@@ -51,32 +51,74 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-.upi-selector-container {
+.account-actions-container,
+.feedback-container {
   margin-bottom: 20px;
 }
 
-.upi-select {
-  width: 100%;
+.account-action-grid {
   margin-top: 12px;
-  padding: 12px;
-  background: rgba(10, 10, 10, 0.75);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: grid;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(20, 20, 20, 0.92));
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  border-radius: 12px;
+  color: var(--gold-2);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn.muted {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+}
+
+.feedback-form {
+  margin-top: 12px;
+}
+
+.feedback-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.feedback-form span {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.feedback-form textarea {
+  background: rgba(10, 10, 10, 0.78);
+  border: 1px solid rgba(212, 175, 55, 0.24);
   border-radius: 12px;
   color: var(--text-primary);
+  padding: 12px;
+  min-height: 100px;
+  resize: vertical;
   font-family: inherit;
-  font-size: 14px;
-  cursor: pointer;
 }
 
-.upi-select:focus {
+.feedback-form textarea:focus {
   outline: none;
-  border-color: rgba(212, 175, 55, 0.55);
-  background: rgba(0, 0, 0, 0.92);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
-.upi-select option {
-  background: #141414;
-  color: var(--text-primary);
+.feedback-status {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 .actions-container {
