@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import GlassPanel from '../components/common/GlassPanel'
 import QrScannerPanel from '../components/common/QrScannerPanel'
 import { launchUpiIntent } from '../utils/upiDeepLink'
@@ -11,11 +11,14 @@ import {
   getPendingPayments,
   getTopAmountsForShop,
   markPendingAs,
+  removeTransactionById,
+  requeuePendingPayment,
 } from '../utils/transactions'
 import './PayPage.css'
 
 const SHOPS_STORAGE_KEY = 'campus_pay_v6_shop_config'
 const COMPACT_VIEW_KEY = 'campus_pay_v6_compact_view'
+const OPEN_PENDING_PANEL_KEY = 'campus_pay_v6_open_pending_panel'
 
 const defaultShopConfig = [
   { id: 'ravechi', name: 'Ravechi', defaultUpi: '9724399962@okbizaxis' },
@@ -51,6 +54,8 @@ export default function PayPage() {
   const [statusText, setStatusText] = useState('')
   const [isCompactMode, setIsCompactMode] = useState(() => localStorage.getItem(COMPACT_VIEW_KEY) === 'true')
   const [historyVersion, setHistoryVersion] = useState(0)
+  const undoTimerRef = useRef(null)
+  const [undoInfo, setUndoInfo] = useState(null)
   const [pendingItems, setPendingItems] = useState([])
   const [activePendingPrompt, setActivePendingPrompt] = useState(null)
   const [showPendingCenter, setShowPendingCenter] = useState(false)
@@ -79,6 +84,26 @@ export default function PayPage() {
     setPendingItems(nextPending)
     if (nextPending.length > 0) {
       setActivePendingPrompt(nextPending[0])
+    }
+
+    if (localStorage.getItem(OPEN_PENDING_PANEL_KEY) === 'true') {
+      localStorage.removeItem(OPEN_PENDING_PANEL_KEY)
+      setShowPendingCenter(true)
+    }
+
+    const openPendingHandler = () => setShowPendingCenter(true)
+    window.addEventListener('campus-pay-open-pending', openPendingHandler)
+
+    return () => {
+      window.removeEventListener('campus-pay-open-pending', openPendingHandler)
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current)
+      }
     }
   }, [])
 
@@ -190,14 +215,53 @@ export default function PayPage() {
       return
     }
 
-    markPendingAs(item.id, decision)
+    const recordedTx = markPendingAs(item.id, decision)
     syncPendingUi(false)
     setHistoryVersion((prev) => prev + 1)
-    setStatusText(decision === 'yes' ? 'Marked as paid.' : 'Marked as not paid.')
+    if (recordedTx) {
+      if (undoTimerRef.current) {
+        clearTimeout(undoTimerRef.current)
+      }
+
+      setUndoInfo({
+        txId: recordedTx.id,
+        pendingSource: item,
+      })
+
+      undoTimerRef.current = setTimeout(() => {
+        setUndoInfo(null)
+      }, 5000)
+    }
+
+    setStatusText(decision === 'yes' ? 'Marked as paid. Undo available for 5s.' : 'Marked as not paid. Undo available for 5s.')
     if (activePendingPrompt?.id === item.id) {
       const latest = getPendingPayments()
       setActivePendingPrompt(latest[0] || null)
     }
+  }
+
+  const undoLastDecision = () => {
+    if (!undoInfo) {
+      return
+    }
+
+    removeTransactionById(undoInfo.txId)
+    requeuePendingPayment({
+      shopId: undoInfo.pendingSource.shopId,
+      shopName: undoInfo.pendingSource.shopName,
+      upiId: undoInfo.pendingSource.upiId,
+      amount: undoInfo.pendingSource.amount,
+      intentApp: undoInfo.pendingSource.intentApp || 'other',
+    })
+
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current)
+    }
+
+    setUndoInfo(null)
+    setHistoryVersion((prev) => prev + 1)
+    syncPendingUi(true)
+    setStatusText('Last decision reverted. Payment moved back to pending list.')
   }
 
   const onAddScan = (rawText) => {
@@ -268,6 +332,13 @@ export default function PayPage() {
             <button type="button" className="mini-btn danger" onClick={() => confirmPending('no', activePendingPrompt)}>No</button>
             <button type="button" className="mini-btn muted" onClick={() => confirmPending('later', activePendingPrompt)}>Maybe Later</button>
           </div>
+        </GlassPanel>
+      ) : null}
+
+      {undoInfo ? (
+        <GlassPanel className="undo-panel">
+          <p>Changed payment decision by mistake?</p>
+          <button type="button" className="mini-btn" onClick={undoLastDecision}>Undo (5s)</button>
         </GlassPanel>
       ) : null}
 

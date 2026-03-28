@@ -4,6 +4,7 @@ import BottomNav from './components/layout/BottomNav'
 import PayPage from './pages/PayPage'
 import ScanQuickPayPage from './pages/ScanQuickPayPage'
 import AnalyticsPage from './pages/AnalyticsPage'
+import HistoryPage from './pages/HistoryPage'
 import ProfilePage from './pages/ProfilePage'
 import PlaygroundPage from './pages/PlaygroundPage'
 import AdminPage from './pages/AdminPage'
@@ -21,6 +22,7 @@ function AuthedRoutes() {
         <Route path="/pay" element={<PayPage />} />
         <Route path="/scan" element={<ScanQuickPayPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/history" element={<HistoryPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/admin" element={<AdminPage />} />

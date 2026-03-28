@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Html5Qrcode } from 'html5-qrcode'
 import './QrScannerPanel.css'
 
 export default function QrScannerPanel({
@@ -8,8 +7,11 @@ export default function QrScannerPanel({
   helperText = 'Point camera to the shop UPI QR code.',
 }) {
   const scannerRef = useRef(null)
+  const fileInputRef = useRef(null)
   const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState('')
+  const [cameraFailed, setCameraFailed] = useState(false)
+  const [isFileScanning, setIsFileScanning] = useState(false)
   const elementId = useMemo(() => `qr-reader-${Math.random().toString(36).slice(2, 9)}`, [])
 
   const stopScanner = async () => {
@@ -41,6 +43,10 @@ export default function QrScannerPanel({
       return
     }
 
+    setCameraFailed(false)
+
+    const { Html5Qrcode } = await import('html5-qrcode')
+
     const scanner = new Html5Qrcode(elementId)
     scannerRef.current = scanner
 
@@ -59,7 +65,35 @@ export default function QrScannerPanel({
       setIsRunning(true)
     } catch {
       setError('Could not access camera. Please allow permission and try again.')
+      setCameraFailed(true)
       await stopScanner()
+    }
+  }
+
+  const handlePickImage = () => {
+    fileInputRef.current?.click()
+  }
+
+  const onFileChange = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) {
+      return
+    }
+
+    setError('')
+    setIsFileScanning(true)
+
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode')
+      const scanner = new Html5Qrcode(elementId)
+      const decodedText = await scanner.scanFile(file, true)
+      await scanner.clear().catch(() => {})
+      onScan?.(decodedText)
+    } catch {
+      setError('Could not read QR from image. Try a clearer image.')
+    } finally {
+      setIsFileScanning(false)
+      event.target.value = ''
     }
   }
 
@@ -88,6 +122,20 @@ export default function QrScannerPanel({
             Stop Scanner
           </button>
         )}
+
+        {cameraFailed ? (
+          <button type="button" className="qr-btn qr-secondary qr-upload" onClick={handlePickImage} disabled={isFileScanning}>
+            {isFileScanning ? 'Reading Image...' : 'Upload QR Image'}
+          </button>
+        ) : null}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="qr-file-input"
+          onChange={onFileChange}
+        />
       </div>
 
       {error ? <p className="qr-error">{error}</p> : null}

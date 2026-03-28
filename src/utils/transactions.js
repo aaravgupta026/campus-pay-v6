@@ -19,6 +19,10 @@ const writeList = (key, list) => localStorage.setItem(key, JSON.stringify(list))
 
 export const getTransactions = () => readList(TX_STORAGE_KEY)
 
+export const getTransactionsSorted = () => {
+  return [...getTransactions()].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+}
+
 export const addTransaction = ({ shopName, upiId, amount, status = 'confirmed', appUsed = 'other', createdAt = new Date().toISOString() }) => {
   const entry = {
     id: `tx-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -60,6 +64,10 @@ export const addPendingPayment = ({ shopId, shopName, upiId, amount, intentApp =
   return entry
 }
 
+export const requeuePendingPayment = ({ shopId, shopName, upiId, amount, intentApp = 'other' }) => {
+  return addPendingPayment({ shopId, shopName, upiId, amount, intentApp })
+}
+
 export const markPendingAs = (pendingId, decision) => {
   const current = getPendingPayments()
   const target = current.find((pending) => pending.id === pendingId)
@@ -79,6 +87,14 @@ export const markPendingAs = (pendingId, decision) => {
     createdAt: target.createdAt,
     appUsed: target.intentApp || 'other',
   })
+}
+
+export const removeTransactionById = (transactionId) => {
+  const current = getTransactions()
+  const target = current.find((tx) => tx.id === transactionId) || null
+  const next = current.filter((tx) => tx.id !== transactionId)
+  writeList(TX_STORAGE_KEY, next)
+  return target
 }
 
 export const deferPendingPayment = (pendingId) => {

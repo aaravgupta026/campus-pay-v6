@@ -26,6 +26,8 @@
 
 .qr-actions {
   margin-top: 10px;
+  display: grid;
+  gap: 8px;
 }
 
 .qr-btn {
@@ -44,6 +46,14 @@
 .qr-btn.qr-secondary {
   color: var(--text-primary);
   background: rgba(14, 14, 14, 0.9);
+}
+
+.qr-btn.qr-upload {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.qr-file-input {
+  display: none;
 }
 
 .qr-error {

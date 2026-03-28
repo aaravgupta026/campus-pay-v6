@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import GlassPanel from '../components/common/GlassPanel'
-import { getConfirmedTransactions } from '../utils/transactions'
+import { getConfirmedTransactions, getTransactionsSorted } from '../utils/transactions'
 import './AnalyticsPage.css'
 
 const sumAmount = (items) => items.reduce((total, item) => total + Number(item.amount || 0), 0)
@@ -8,6 +9,8 @@ const sumAmount = (items) => items.reduce((total, item) => total + Number(item.a
 const formatCurrency = (value) => `Rs ${Number(value || 0).toFixed(0)}`
 
 export default function AnalyticsPage() {
+  const navigate = useNavigate()
+  const allTransactions = useMemo(() => getTransactionsSorted(), [])
   const transactions = useMemo(() => getConfirmedTransactions(), [])
   const now = new Date()
 
@@ -28,7 +31,7 @@ export default function AnalyticsPage() {
     transactions.forEach((tx) => {
       const key = tx.shopName || 'Unknown Shop'
       if (!bucket.has(key)) {
-        bucket.set(key, { shopName: key, overall: 0, month: 0, year: 0, count: 0 })
+        bucket.set(key, { shopName: key, overall: 0, month: 0, year: 0, count: 0, monthTransactions: [] })
       }
 
       const row = bucket.get(key)
@@ -44,6 +47,7 @@ export default function AnalyticsPage() {
       }
       if (sameMonth) {
         row.month += amount
+        row.monthTransactions.push(tx)
       }
     })
 
@@ -54,13 +58,28 @@ export default function AnalyticsPage() {
   const totalMonth = useMemo(() => sumAmount(monthTransactions), [monthTransactions])
   const totalYear = useMemo(() => sumAmount(yearTransactions), [yearTransactions])
 
-  const exportCsv = () => {
-    const header = ['Date', 'Time', 'Shop Name', 'UPI ID', 'Amount']
-    const rows = transactions.map((tx) => {
+  const exportCsv = (advanced = false) => {
+    const header = advanced
+      ? ['Date', 'Time', 'Shop Name', 'UPI ID', 'Amount', 'Status', 'App Used']
+      : ['Date', 'Time', 'Shop Name', 'UPI ID', 'Amount']
+
+    const rows = allTransactions.map((tx) => {
       const date = new Date(tx.createdAt)
       const dateLabel = date.toLocaleDateString('en-IN')
       const timeLabel = date.toLocaleTimeString('en-IN')
-      return [dateLabel, timeLabel, tx.shopName || '', tx.upiId || '', String(Number(tx.amount || 0))]
+      if (!advanced) {
+        return [dateLabel, timeLabel, tx.shopName || '', tx.upiId || '', String(Number(tx.amount || 0))]
+      }
+
+      return [
+        dateLabel,
+        timeLabel,
+        tx.shopName || '',
+        tx.upiId || '',
+        String(Number(tx.amount || 0)),
+        tx.status || 'confirmed',
+        tx.appUsed || 'other',
+      ]
     })
 
     const escaped = [header, ...rows]
@@ -71,7 +90,7 @@ export default function AnalyticsPage() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `campus-pay-transactions-${new Date().toISOString().slice(0, 10)}.csv`
+    link.download = `campus-pay-${advanced ? 'advanced-' : ''}transactions-${new Date().toISOString().slice(0, 10)}.csv`
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -116,13 +135,29 @@ export default function AnalyticsPage() {
               <span>Month: {formatCurrency(item.month)}</span>
               <span>Year: {formatCurrency(item.year)}</span>
             </div>
+
+            <details className="month-tx-dropdown">
+              <summary>This Month Transactions ({item.monthTransactions.length})</summary>
+              {item.monthTransactions.length === 0 ? <p>No transactions this month.</p> : null}
+              {item.monthTransactions.map((tx) => {
+                const txDate = new Date(tx.createdAt)
+                return (
+                  <div className="month-tx-item" key={tx.id}>
+                    <span>{txDate.toLocaleDateString('en-IN')} {txDate.toLocaleTimeString('en-IN')}</span>
+                    <strong>{formatCurrency(tx.amount)}</strong>
+                  </div>
+                )
+              })}
+            </details>
           </div>
         ))}
       </GlassPanel>
 
       <GlassPanel className="export-container">
         <h3>Export</h3>
-        <button type="button" className="export-btn" onClick={exportCsv}>Download CSV</button>
+        <button type="button" className="export-btn" onClick={() => exportCsv(false)}>Download CSV</button>
+        <button type="button" className="export-btn secondary" onClick={() => exportCsv(true)}>Download Advanced CSV</button>
+        <button type="button" className="export-btn secondary" onClick={() => navigate('/history')}>Open Transaction History</button>
       </GlassPanel>
     </div>
   )

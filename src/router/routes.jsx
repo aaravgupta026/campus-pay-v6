@@ -5,6 +5,7 @@ export const routes = [
   { path: '/pay', name: 'Pay', requiresAuth: true },
   { path: '/scan', name: 'Scan', requiresAuth: true },
   { path: '/analytics', name: 'Analytics', requiresAuth: true },
+  { path: '/history', name: 'History', requiresAuth: true },
   { path: '/profile', name: 'Profile', requiresAuth: true },
   { path: '/playground', name: 'Playground', requiresAuth: true },
   { path: '/admin', name: 'Admin', requiresAuth: true, requiresAdmin: true },

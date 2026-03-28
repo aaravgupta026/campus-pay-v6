@@ -29,6 +29,33 @@
   border: 1px solid rgba(212, 175, 55, 0.25);
 }
 
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.header-bell {
+  position: relative;
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  border-radius: 999px;
+  background: rgba(8, 8, 8, 0.9);
+  color: var(--gold-1);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 12px;
+}
+
+.header-bell-badge {
+  margin-left: 8px;
+  border-radius: 999px;
+  padding: 1px 7px;
+  background: linear-gradient(135deg, #d4af37, #ffd700);
+  color: #111111;
+  font-size: 11px;
+}
+
 .brand-title {
   font-size: 14px;
   font-weight: 700;

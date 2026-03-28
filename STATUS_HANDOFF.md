@@ -19,6 +19,12 @@ Completed now:
 - Feedback moved from Analytics to Profile.
 - Profile now includes Account placeholders: Change Password, Update Email, Forward Account Details.
 - Analytics rebuilt as data-only with totals, per-shop breakdown, and CSV export.
+- Analytics now includes per-shop monthly transaction dropdowns (date/time and amount details).
+- Advanced CSV export added with status and app-used metadata.
+- Global pending bell added in header for all tabs.
+- Transaction History page added with filters (shop/date/status) and Quick Re-pay action.
+- Undo window added after Yes/No payment confirmation decisions (5 seconds).
+- Scanner now supports camera fallback via QR image upload.
 
 ## Build Verification
 
@@ -26,6 +32,23 @@ Most recent build target:
 - Command: npm run build
 - Status: PASS
 - Notes: Build succeeds; Vite still reports large chunk warning (>500 kB) due to app bundle size.
+
+## Latest Feature Batch (Current)
+
+- Per-shop analytics dropdown:
+  - In Analytics, each shop row now has expandable `This Month Transactions` details.
+  - Shows exact day/time and amount per monthly transaction.
+- Global pending access:
+  - Header bell displays pending count and opens pending center from any tab.
+- Transaction history route:
+  - New page with filters for shop, status, and time range.
+  - Includes `Quick Re-pay` action that launches UPI and re-adds pending confirmation.
+- Undo support:
+  - After marking pending payment as Yes/No, an undo panel appears for 5 seconds.
+  - Undo restores payment to pending queue.
+- Scanner resilience and performance:
+  - QR scanner now lazy-loads `html5-qrcode` to improve initial load behavior.
+  - If camera access fails, users can upload a QR image and decode it.
 
 ## Compact Mode Toggle (New)
 

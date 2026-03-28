@@ -64,6 +64,18 @@
   margin-bottom: 14px;
 }
 
+.undo-panel {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.undo-panel p {
+  margin: 0;
+}
+
 .pending-prompt h3,
 .pending-center h3 {
   margin-bottom: 6px;

@@ -59,6 +59,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .shop-breakdown-row p {
@@ -73,6 +74,48 @@
   gap: 2px;
   color: var(--gold-2);
   font-size: 13px;
+}
+
+.month-tx-dropdown {
+  width: 100%;
+  margin-top: 8px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  padding-top: 8px;
+}
+
+.month-tx-dropdown summary {
+  cursor: pointer;
+  color: var(--gold-1);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.month-tx-dropdown p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.month-tx-item {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.month-tx-item span {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+.month-tx-item strong {
+  color: var(--gold-2);
+  font-size: 12px;
 }
 
 .export-container {
@@ -99,4 +142,11 @@
 
 .export-btn:active {
   transform: translateY(0);
+}
+
+.export-btn.secondary {
+  margin-top: 8px;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--gold-2);
 }
