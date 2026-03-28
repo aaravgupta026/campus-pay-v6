@@ -12,7 +12,7 @@ Completed now:
 - QR-first flows added for Add Shop and Edit UPI actions.
 - Real camera QR scanner integrated using html5-qrcode.
 - Scanner cleanup implemented to stop and clear camera on scan/close/unmount.
-- Preferred UPI app friction removed; app now launches generic upi://pay intent.
+- Preferred app behavior is now user-aware: most-used app default with manual override in Scan/Quick Pay.
 - Dynamic quick amount chips now use top 3 most frequent confirmed amounts per shop.
 - Pending payment confirmation flow added (Yes / No / Maybe Later).
 - Persistent pending notification icon added in Pay tab.
@@ -24,7 +24,19 @@ Completed now:
 
 Most recent build target:
 - Command: npm run build
-- Status: Pending re-run after final patch set (required in next validation step)
+- Status: PASS
+- Notes: Build succeeds; Vite still reports large chunk warning (>500 kB) due to app bundle size.
+
+## Compact Mode Toggle (New)
+
+- Added a quick-access dual toggle on Pay screen: `Compact View` and `Default View`.
+- Toggle state is persisted via localStorage key `campus_pay_v6_compact_view`.
+- `Compact View` applies a dedicated `.v5-compact-mode` class path to Pay layout.
+- V5 compact mode changes structure density (smaller spacing, fonts, chip size, tighter card actions) while preserving premium black/gold/red color language.
+- Re-integrated per-shop tracker line in card header: `Total Spent Here: Rs X`.
+- Files updated for this:
+  - `src/pages/PayPage.jsx`
+  - `src/pages/PayPage.css`
 
 ## Implemented in This Final Pass
 

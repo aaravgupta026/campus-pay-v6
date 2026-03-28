@@ -6,6 +6,7 @@ import { parseUpiQrPayload } from '../utils/upiQrParser'
 import {
   addPendingPayment,
   deferPendingPayment,
+  getConfirmedTransactions,
   getMostUsedUpiApp,
   getPendingPayments,
   getTopAmountsForShop,
@@ -14,6 +15,7 @@ import {
 import './PayPage.css'
 
 const SHOPS_STORAGE_KEY = 'campus_pay_v6_shop_config'
+const COMPACT_VIEW_KEY = 'campus_pay_v6_compact_view'
 
 const defaultShopConfig = [
   { id: 'ravechi', name: 'Ravechi', defaultUpi: '9724399962@okbizaxis' },
@@ -47,6 +49,7 @@ export default function PayPage() {
   const [shops, setShops] = useState(loadShopState)
   const [customAmounts, setCustomAmounts] = useState({})
   const [statusText, setStatusText] = useState('')
+  const [isCompactMode, setIsCompactMode] = useState(() => localStorage.getItem(COMPACT_VIEW_KEY) === 'true')
   const [historyVersion, setHistoryVersion] = useState(0)
   const [pendingItems, setPendingItems] = useState([])
   const [activePendingPrompt, setActivePendingPrompt] = useState(null)
@@ -68,6 +71,10 @@ export default function PayPage() {
   }, [shops])
 
   useEffect(() => {
+    localStorage.setItem(COMPACT_VIEW_KEY, String(isCompactMode))
+  }, [isCompactMode])
+
+  useEffect(() => {
     const nextPending = getPendingPayments()
     setPendingItems(nextPending)
     if (nextPending.length > 0) {
@@ -81,6 +88,17 @@ export default function PayPage() {
       return acc
     }, {})
   }, [shops, historyVersion])
+
+  const totalSpentByShop = useMemo(() => {
+    return getConfirmedTransactions().reduce((acc, tx) => {
+      const key = tx.shopName || ''
+      if (!key) {
+        return acc
+      }
+      acc[key] = (acc[key] || 0) + Number(tx.amount || 0)
+      return acc
+    }, {})
+  }, [historyVersion, shops])
 
   const syncPendingUi = (focusFirst = false) => {
     const nextPending = getPendingPayments()
@@ -214,7 +232,7 @@ export default function PayPage() {
   }
 
   return (
-    <div className="pay-page">
+    <div className={`pay-page ${isCompactMode ? 'v5-compact-mode' : ''}`}>
       <div className="pay-header-row">
         <h1>Nearby Payments</h1>
         <button type="button" className="pending-toggle" onClick={() => setShowPendingCenter((prev) => !prev)}>
@@ -223,6 +241,23 @@ export default function PayPage() {
         </button>
       </div>
       <p className="pay-subtitle">Nearby payments.</p>
+
+      <div className="view-toggle-row">
+        <button
+          type="button"
+          className={`view-toggle-btn ${isCompactMode ? 'active' : ''}`}
+          onClick={() => setIsCompactMode(true)}
+        >
+          Compact View
+        </button>
+        <button
+          type="button"
+          className={`view-toggle-btn ${!isCompactMode ? 'active' : ''}`}
+          onClick={() => setIsCompactMode(false)}
+        >
+          Default View
+        </button>
+      </div>
 
       {activePendingPrompt ? (
         <GlassPanel className="pending-prompt">
@@ -262,6 +297,7 @@ export default function PayPage() {
             <div>
               <h2>{shop.name}</h2>
               <p className="shop-upi">UPI: {shop.defaultUpi}</p>
+              <p className="shop-spent">Total Spent Here: Rs {Number(totalSpentByShop[shop.name] || 0).toFixed(0)}</p>
             </div>
           </div>
 

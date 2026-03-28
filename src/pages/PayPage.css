@@ -36,6 +36,29 @@
   color: var(--text-secondary);
 }
 
+.view-toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.view-toggle-btn {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+  background: rgba(8, 8, 8, 0.94);
+  color: var(--gold-1);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 12px;
+}
+
+.view-toggle-btn.active {
+  background: linear-gradient(120deg, #d4af37, #ffd700);
+  color: #111111;
+  border-color: rgba(255, 215, 0, 0.8);
+}
+
 .pending-prompt,
 .pending-center {
   margin-bottom: 14px;
@@ -90,6 +113,13 @@
   margin-top: 2px;
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+.shop-spent {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold-3);
 }
 
 .add-shop-grid select,
@@ -201,4 +231,87 @@
   gap: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+/* V5 compact structure with preserved V6 premium color language */
+.v5-compact-mode .pay-subtitle {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.v5-compact-mode .view-toggle-row {
+  margin-bottom: 10px;
+  gap: 6px;
+}
+
+.v5-compact-mode .view-toggle-btn {
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.v5-compact-mode .shop-card {
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 16px;
+}
+
+.v5-compact-mode .shop-header h2 {
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.v5-compact-mode .shop-upi {
+  font-size: 11px;
+  margin-top: 0;
+}
+
+.v5-compact-mode .shop-spent {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.v5-compact-mode .chips-grid {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.v5-compact-mode .amount-chip {
+  min-width: 62px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(11, 11, 11, 0.95);
+  border-color: rgba(212, 175, 55, 0.55);
+  color: var(--gold-2);
+}
+
+.v5-compact-mode .custom-pay-row {
+  margin-top: 7px;
+  gap: 6px;
+}
+
+.v5-compact-mode .custom-input {
+  padding: 8px;
+  font-size: 13px;
+}
+
+.v5-compact-mode .shop-actions {
+  margin-top: 7px;
+  gap: 6px;
+}
+
+.v5-compact-mode .mini-btn {
+  padding: 7px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+.v5-compact-mode .pending-row {
+  padding: 8px;
+  gap: 6px;
+}
+
+.v5-compact-mode .pending-row p,
+.v5-compact-mode .pending-empty {
+  font-size: 11px;
 }
