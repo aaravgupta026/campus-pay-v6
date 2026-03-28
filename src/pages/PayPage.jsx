@@ -20,11 +20,12 @@ const SHOPS_STORAGE_KEY = 'campus_pay_v6_shop_config'
 const COMPACT_VIEW_KEY = 'campus_pay_v6_compact_view'
 const OPEN_PENDING_PANEL_KEY = 'campus_pay_v6_open_pending_panel'
 
+// Default UPI IDs below are sample/demo presets. Users must verify payee details in their UPI app before final payment.
 const defaultShopConfig = [
-  { id: 'ravechi', name: 'Ravechi', defaultUpi: '9724399962@okbizaxis' },
-  { id: 'lafresco', name: 'La Fresco', defaultUpi: 'paytmqr6clwnr@ptys' },
-  { id: 'yewale', name: 'Yewale', defaultUpi: 'gpay-11254199960@okbizaxis' },
-  { id: 'amul', name: 'Amul', defaultUpi: 'vyapar.171649456201@hdfcbank' },
+  { id: 'ravechi', name: 'Ravechi', defaultUpi: 'demo.ravechi@upi' },
+  { id: 'lafresco', name: 'La Fresco', defaultUpi: 'demo.lafresco@upi' },
+  { id: 'yewale', name: 'Yewale', defaultUpi: 'demo.yewale@upi' },
+  { id: 'amul', name: 'Amul', defaultUpi: 'demo.amul@upi' },
 ]
 
 const loadShopState = () => {
