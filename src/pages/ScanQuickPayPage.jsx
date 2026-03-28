@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import GlassPanel from '../components/common/GlassPanel'
-import QrScannerPanel from '../components/common/QrScannerPanel'
 import { launchUpiIntent } from '../utils/upiDeepLink'
 import { parseUpiQrPayload } from '../utils/upiQrParser'
-import { addPendingPayment, getMostUsedUpiApp } from '../utils/transactions'
+import { addLocalExpense } from '../utils/localExpenses'
+import { getMostUsedUpiApp } from '../utils/transactions'
 import './ScanQuickPayPage.css'
 
 const SCAN_APP_PREF_KEY = 'campus_pay_v6_scan_preferred_app'
@@ -23,19 +23,16 @@ const APP_OPTIONS = [
 ]
 
 export default function ScanQuickPayPage() {
+  const scannerRef = useRef(null)
   const [form, setForm] = useState({
     upiId: '',
     name: '',
     amount: '',
   })
+  const [isScanning, setIsScanning] = useState(false)
   const [status, setStatus] = useState('')
-  const [scanDialog, setScanDialog] = useState({
-    open: false,
-    upiId: '',
-    name: '',
-    amount: '',
-  })
   const [scanPreferredApp, setScanPreferredApp] = useState(() => localStorage.getItem(SCAN_APP_PREF_KEY) || 'auto')
+  const readerId = useMemo(() => `scan-fast-reader-${Math.random().toString(36).slice(2, 9)}`, [])
 
   useEffect(() => {
     localStorage.setItem(SCAN_APP_PREF_KEY, scanPreferredApp)
@@ -46,29 +43,88 @@ export default function ScanQuickPayPage() {
   const preferredAppLabel = APP_LABELS[preferredApp] || APP_LABELS.gpay
   const preferredAppDisplay = scanPreferredApp === 'auto' ? `${preferredAppLabel} (Auto)` : preferredAppLabel
 
-  const onChange = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
-  }
-
-  const handleQrScan = (rawText) => {
-    const parsed = parseUpiQrPayload(rawText)
-    if (!parsed.upiId) {
-      setStatus('QR scanned but UPI ID could not be extracted. Please enter manually.')
+  const stopScanner = async () => {
+    const scanner = scannerRef.current
+    if (!scanner) {
+      setIsScanning(false)
       return
     }
 
-    setForm((prev) => ({
-      ...prev,
-      upiId: parsed.upiId,
-      name: parsed.name || prev.name,
-    }))
-    setScanDialog({
-      open: true,
-      upiId: parsed.upiId,
-      name: parsed.name || 'Scanned Merchant',
-      amount: '',
-    })
-    setStatus('QR captured. Enter amount in popup to continue.')
+    try {
+      await scanner.stop()
+    } catch {
+      // Scanner can already be stopped.
+    }
+
+    try {
+      await scanner.clear()
+    } catch {
+      // Ignore clear failure on teardown.
+    }
+
+    scannerRef.current = null
+    setIsScanning(false)
+  }
+
+  const startScanner = async () => {
+    if (isScanning) {
+      return
+    }
+
+    setStatus('Starting rear camera...')
+    const { Html5Qrcode } = await import('html5-qrcode')
+    const scanner = new Html5Qrcode(readerId)
+    scannerRef.current = scanner
+
+    const onScanSuccess = async (decodedText) => {
+      const parsed = parseUpiQrPayload(decodedText)
+      if (!parsed.upiId) {
+        setStatus('Scanned code has no valid UPI ID. Try scanning again.')
+        return
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        upiId: parsed.upiId,
+        name: parsed.name || prev.name || 'Scanned Merchant',
+      }))
+
+      setStatus('QR scanned instantly. Enter amount and tap Pay Now.')
+      await stopScanner()
+    }
+
+    const config = {
+      fps: 20,
+      qrbox: { width: 260, height: 260 },
+      aspectRatio: 1,
+    }
+
+    try {
+      await scanner.start({ facingMode: { exact: 'environment' } }, config, onScanSuccess)
+      setIsScanning(true)
+      setStatus('Camera ready. Point at UPI QR.')
+    } catch {
+      try {
+        await scanner.start({ facingMode: 'environment' }, config, onScanSuccess)
+        setIsScanning(true)
+        setStatus('Camera ready. Point at UPI QR.')
+      } catch {
+        setStatus('Camera could not start. Please refresh and allow camera permission.')
+        await stopScanner()
+      }
+    }
+  }
+
+  useEffect(() => {
+    startScanner()
+
+    return () => {
+      stopScanner()
+    }
+  }, [])
+
+  const onChange = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   const handlePayNow = (event) => {
@@ -88,60 +144,38 @@ export default function ScanQuickPayPage() {
       app: preferredApp,
     })
 
-    addPendingPayment({
-      shopId: `quick-${Date.now()}`,
-      shopName: form.name,
-      upiId: form.upiId,
-      amount,
-      intentApp: preferredApp,
-    })
-
-    setStatus('UPI app launched with your most-used app. Confirm later from Pay tab pending icon.')
-  }
-
-  const handleScanDialogPay = () => {
-    const amount = Number(scanDialog.amount)
-    if (Number.isNaN(amount) || amount <= 0) {
-      setStatus('Enter a valid amount in the scan popup.')
-      return
-    }
-
-    launchUpiIntent({
-      upiId: scanDialog.upiId,
-      name: scanDialog.name,
-      amount,
-      note: `Quick Pay to ${scanDialog.name}`,
-      app: preferredApp,
-    })
-
-    addPendingPayment({
-      shopId: `quick-scan-${Date.now()}`,
-      shopName: scanDialog.name,
-      upiId: scanDialog.upiId,
-      amount,
-      intentApp: preferredApp,
-    })
-
-    setForm((prev) => ({
-      ...prev,
-      upiId: scanDialog.upiId,
-      name: scanDialog.name,
-      amount: String(amount),
-    }))
-    setScanDialog({ open: false, upiId: '', name: '', amount: '' })
-    setStatus('UPI app launched from scanned QR. Confirm later from Pay tab pending icon.')
+    setStatus('UPI app launched. Waiting for payment confirmation...')
+    setTimeout(() => {
+      const success = window.confirm(`Did payment succeed?\n${form.name}\nRs ${amount}`)
+      if (success) {
+        addLocalExpense({
+          shopName: form.name,
+          upiId: form.upiId,
+          amount,
+        })
+        setStatus('Payment marked successful and logged locally.')
+        setForm((prev) => ({ ...prev, amount: '' }))
+      } else {
+        setStatus('Payment not marked as successful. No expense logged.')
+      }
+    }, 600)
   }
 
   return (
     <div className="scan-page">
-      <h1>Scan / Quick Pay</h1>
+      <h1>Scan & Pay Fast</h1>
 
       <GlassPanel>
-        <QrScannerPanel
-          onScan={handleQrScan}
-          title="Scan UPI QR"
-          helperText="Scan first to auto-fill merchant name and UPI ID in the quick pay form."
-        />
+        <h3>Hyper-Fast Scanner</h3>
+        <p className="scan-hint">Rear camera • 20 fps • Instant parse</p>
+        <div id={readerId} className="fast-scanner-view" />
+        <div className="scan-actions">
+          {!isScanning ? (
+            <button type="button" className="pay-now-btn" onClick={startScanner}>Start Camera</button>
+          ) : (
+            <button type="button" className="scan-stop-btn" onClick={stopScanner}>Pause Camera</button>
+          )}
+        </div>
       </GlassPanel>
 
       <GlassPanel>
@@ -158,22 +192,24 @@ export default function ScanQuickPayPage() {
 
         <form className="quick-pay-form" onSubmit={handlePayNow}>
           <label>
-            <span>Enter UPI ID</span>
+            <span>UPI ID (auto-filled from scan)</span>
             <input
               type="text"
               placeholder="merchant@upi"
               value={form.upiId}
               onChange={(e) => onChange('upiId', e.target.value)}
+              readOnly
             />
           </label>
 
           <label>
-            <span>Enter Name</span>
+            <span>Merchant Name (auto-filled from scan)</span>
             <input
               type="text"
               placeholder="Shop name"
               value={form.name}
               onChange={(e) => onChange('name', e.target.value)}
+              readOnly
             />
           </label>
 
@@ -193,31 +229,6 @@ export default function ScanQuickPayPage() {
 
         {status ? <p className="scan-status">{status}</p> : null}
       </GlassPanel>
-
-      {scanDialog.open ? (
-        <div className="scan-dialog-overlay" role="presentation" onClick={() => setScanDialog({ open: false, upiId: '', name: '', amount: '' })}>
-          <GlassPanel className="scan-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Pay Scanned Merchant</h3>
-            <p className="scan-dialog-line"><strong>Name:</strong> {scanDialog.name}</p>
-            <p className="scan-dialog-line"><strong>UPI:</strong> {scanDialog.upiId}</p>
-            <p className="scan-dialog-preferred"><strong>Preferred App:</strong> {preferredAppDisplay}</p>
-
-            <label className="scan-dialog-field">
-              <span>Enter Amount</span>
-              <input
-                type="number"
-                min="1"
-                placeholder="20"
-                value={scanDialog.amount}
-                onChange={(e) => setScanDialog((prev) => ({ ...prev, amount: e.target.value }))}
-              />
-            </label>
-
-            <button type="button" className="pay-now-btn" onClick={handleScanDialogPay}>Pay Now</button>
-            <button type="button" className="scan-dialog-cancel" onClick={() => setScanDialog({ open: false, upiId: '', name: '', amount: '' })}>Cancel</button>
-          </GlassPanel>
-        </div>
-      ) : null}
     </div>
   )
 }

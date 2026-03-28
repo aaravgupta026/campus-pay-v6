@@ -60,6 +60,19 @@
   border-radius: 3px;
 }
 
+.nav-item.scan-primary {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(20, 20, 20, 0.82);
+}
+
+.nav-item.scan-primary .nav-icon {
+  font-size: 26px;
+}
+
+.nav-item.scan-primary.active {
+  background: linear-gradient(145deg, rgba(212, 175, 55, 0.25), rgba(20, 20, 20, 0.9));
+}
+
 .nav-icon {
   font-size: 24px;
 }

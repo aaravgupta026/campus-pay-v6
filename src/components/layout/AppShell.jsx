@@ -39,7 +39,8 @@ export default function AppShell({ children, userLabel }) {
       <div className="app-frame">
         <header className="app-header-glass">
           <div className="header-row">
-            <div>
+            <div className="brand-block">
+              <img src="/logo.png" alt="Campus Pay Logo" className="brand-logo" />
               <div className="brand-title">Campus Pay V6</div>
               <div className="brand-subtitle">Hello, {userLabel}</div>
             </div>

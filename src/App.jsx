@@ -4,10 +4,7 @@ import BottomNav from './components/layout/BottomNav'
 import PayPage from './pages/PayPage'
 import ScanQuickPayPage from './pages/ScanQuickPayPage'
 import AnalyticsPage from './pages/AnalyticsPage'
-import HistoryPage from './pages/HistoryPage'
 import ProfilePage from './pages/ProfilePage'
-import PlaygroundPage from './pages/PlaygroundPage'
-import AdminPage from './pages/AdminPage'
 import SnackbarHost from './components/common/SnackbarHost'
 import { useAuth } from './context/AuthContext.jsx'
 
@@ -18,15 +15,12 @@ function AuthedRoutes() {
   return (
     <AppShell userLabel={userLabel}>
       <Routes>
-        <Route path="/" element={<Navigate to="/pay" replace />} />
+        <Route path="/" element={<Navigate to="/scan" replace />} />
         <Route path="/pay" element={<PayPage />} />
         <Route path="/scan" element={<ScanQuickPayPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
-        <Route path="/history" element={<HistoryPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/playground" element={<PlaygroundPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<Navigate to="/pay" replace />} />
+        <Route path="*" element={<Navigate to="/scan" replace />} />
       </Routes>
       <BottomNav />
     </AppShell>
@@ -41,7 +35,7 @@ function App() {
       {loading ? <div className="boot-loader">Loading Campus Pay...</div> : null}
       {!loading ? (
         <Routes>
-          <Route path="/*" element={isBypassMode || user ? <AuthedRoutes /> : <Navigate to="/pay" replace />} />
+          <Route path="/*" element={isBypassMode || user ? <AuthedRoutes /> : <Navigate to="/scan" replace />} />
         </Routes>
       ) : null}
       <SnackbarHost snackbar={{ open: false, message: '', type: 'info' }} />

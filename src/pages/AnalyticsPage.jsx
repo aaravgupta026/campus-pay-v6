@@ -1,34 +1,49 @@
-import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 import GlassPanel from '../components/common/GlassPanel'
-import { getConfirmedTransactions, getTransactionsSorted } from '../utils/transactions'
+import { getLocalExpenses } from '../utils/localExpenses'
 import './AnalyticsPage.css'
 
 const sumAmount = (items) => items.reduce((total, item) => total + Number(item.amount || 0), 0)
 
 const formatCurrency = (value) => `Rs ${Number(value || 0).toFixed(0)}`
 
+const getExpenseDate = (expense) => {
+  const parsed = new Date(expense.createdAt || `${expense.date} ${expense.time}`)
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed
+}
+
 export default function AnalyticsPage() {
-  const navigate = useNavigate()
-  const allTransactions = useMemo(() => getTransactionsSorted(), [])
-  const transactions = useMemo(() => getConfirmedTransactions(), [])
+  const [expenses, setExpenses] = useState(() => getLocalExpenses())
   const now = new Date()
 
+  useEffect(() => {
+    const syncExpenses = () => setExpenses(getLocalExpenses())
+
+    syncExpenses()
+    window.addEventListener('storage', syncExpenses)
+    window.addEventListener('focus', syncExpenses)
+
+    return () => {
+      window.removeEventListener('storage', syncExpenses)
+      window.removeEventListener('focus', syncExpenses)
+    }
+  }, [])
+
   const monthTransactions = useMemo(() => {
-    return transactions.filter((tx) => {
-      const txDate = new Date(tx.createdAt)
+    return expenses.filter((tx) => {
+      const txDate = getExpenseDate(tx)
       return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()
     })
-  }, [transactions, now])
+  }, [expenses, now])
 
   const yearTransactions = useMemo(() => {
-    return transactions.filter((tx) => new Date(tx.createdAt).getFullYear() === now.getFullYear())
-  }, [transactions, now])
+    return expenses.filter((tx) => getExpenseDate(tx).getFullYear() === now.getFullYear())
+  }, [expenses, now])
 
   const byShop = useMemo(() => {
     const bucket = new Map()
 
-    transactions.forEach((tx) => {
+    expenses.forEach((tx) => {
       const key = tx.shopName || 'Unknown Shop'
       if (!bucket.has(key)) {
         bucket.set(key, { shopName: key, overall: 0, month: 0, year: 0, count: 0, monthTransactions: [] })
@@ -36,7 +51,7 @@ export default function AnalyticsPage() {
 
       const row = bucket.get(key)
       const amount = Number(tx.amount || 0)
-      const txDate = new Date(tx.createdAt)
+      const txDate = getExpenseDate(tx)
       const sameYear = txDate.getFullYear() === now.getFullYear()
       const sameMonth = sameYear && txDate.getMonth() === now.getMonth()
 
@@ -52,9 +67,9 @@ export default function AnalyticsPage() {
     })
 
     return Array.from(bucket.values()).sort((a, b) => b.overall - a.overall)
-  }, [transactions, now])
+  }, [expenses, now])
 
-  const totalOverall = useMemo(() => sumAmount(transactions), [transactions])
+  const totalOverall = useMemo(() => sumAmount(expenses), [expenses])
   const totalMonth = useMemo(() => sumAmount(monthTransactions), [monthTransactions])
   const totalYear = useMemo(() => sumAmount(yearTransactions), [yearTransactions])
 
@@ -63,8 +78,8 @@ export default function AnalyticsPage() {
       ? ['Date', 'Time', 'Shop Name', 'UPI ID', 'Amount', 'Status', 'App Used']
       : ['Date', 'Time', 'Shop Name', 'UPI ID', 'Amount']
 
-    const rows = allTransactions.map((tx) => {
-      const date = new Date(tx.createdAt)
+    const rows = expenses.map((tx) => {
+      const date = getExpenseDate(tx)
       const dateLabel = date.toLocaleDateString('en-IN')
       const timeLabel = date.toLocaleTimeString('en-IN')
       if (!advanced) {
@@ -77,8 +92,8 @@ export default function AnalyticsPage() {
         tx.shopName || '',
         tx.upiId || '',
         String(Number(tx.amount || 0)),
-        tx.status || 'confirmed',
-        tx.appUsed || 'other',
+        'confirmed',
+        'upi',
       ]
     })
 
@@ -116,7 +131,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="total-card">
             <span className="label">Transactions</span>
-            <span className="value">{transactions.length}</span>
+            <span className="value">{expenses.length}</span>
           </div>
         </div>
       </GlassPanel>
@@ -157,7 +172,6 @@ export default function AnalyticsPage() {
         <h3>Export</h3>
         <button type="button" className="export-btn" onClick={() => exportCsv(false)}>Download CSV</button>
         <button type="button" className="export-btn secondary" onClick={() => exportCsv(true)}>Download Advanced CSV</button>
-        <button type="button" className="export-btn secondary" onClick={() => navigate('/history')}>Open Transaction History</button>
       </GlassPanel>
     </div>
   )

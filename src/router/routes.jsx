@@ -1,14 +1,11 @@
 // Router - Route definitions and guards
 
 export const routes = [
-  { path: '/login', name: 'Login', isPublic: true },
-  { path: '/pay', name: 'Pay', requiresAuth: true },
+  { path: '/', name: 'Scan Home', requiresAuth: true },
   { path: '/scan', name: 'Scan', requiresAuth: true },
+  { path: '/pay', name: 'Pay', requiresAuth: true },
   { path: '/analytics', name: 'Analytics', requiresAuth: true },
-  { path: '/history', name: 'History', requiresAuth: true },
   { path: '/profile', name: 'Profile', requiresAuth: true },
-  { path: '/playground', name: 'Playground', requiresAuth: true },
-  { path: '/admin', name: 'Admin', requiresAuth: true, requiresAdmin: true },
 ]
 
 // Role-based access guard (placeholder)

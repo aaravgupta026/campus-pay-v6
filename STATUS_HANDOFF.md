@@ -4,6 +4,39 @@ Project: Campus Pay V6 (Payment Assist + Expense Tracking PWA)
 Current Phase: Phase 3 Finalization - QR + Confirmation + Analytics
 Last Updated: 2026-03-28
 
+## Scan-First Pivot (Latest)
+
+Core UX priority has shifted to camera speed and rapid scan-to-pay flow.
+
+Implemented:
+- Default app landing is now Scan (`/scan`) instead of Pay.
+- Bottom navigation hierarchy is scan-first, with Scan visually emphasized as primary action.
+- Scan page now hosts a hyper-optimized camera feed using html5-qrcode:
+  - Rear environment camera preference
+  - High frame rate (`fps: 20`)
+  - Instant pause on successful scan
+  - UPI parsing for `pa` (UPI ID) and `pn` (merchant)
+  - Auto-fill into form so user only enters amount
+- Local expense logging introduced via `campus_pay_expenses` localStorage array.
+- On Pay Now deep-link trigger, a success confirmation dialog (Yes/No) appears.
+  - On Yes, expense entry is stored as `{ id, date, time, shopName, upiId, amount }`.
+- Analytics now reads from local expense storage and reflects new scan-success entries.
+- Scanner imports are now dynamic in Scan flow as well, keeping build chunking healthy.
+
+## Closure Cleanup (Latest)
+
+- Repository trimmed by removing unused pages/routes and legacy root static files.
+- Added root `README.md` containing project summary, tools used, backend status, and run steps.
+- Kept required docs:
+  - `FRONTEND_README.md`
+  - `BACKEND_README.md`
+  - `STATUS_HANDOFF.md`
+  - `README.md`
+- New logo integrated:
+  - Header brand image
+  - Browser favicon
+  - PWA manifest icon references
+
 ## Current Snapshot
 
 Phase 3 UX/data refinements are now implemented to make the app feel production-like even under auth bypass mode.
